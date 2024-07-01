@@ -1,0 +1,41 @@
+VAGRANTFILE_API_VERSION = "2"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  config.vm.box = "ubuntu/bionic64"
+
+  config.vm.define "namenode" do |namenode|
+    namenode.vm.hostname = "namenode"
+    namenode.vm.network :private_network, ip: "192.168.50.11"
+    namenode.vm.provider "virtualbox" do |vb|
+      vb.memory = 2048
+      vb.cpus = 2
+    end
+  end
+
+  config.vm.define "datanode1" do |datanode1|
+    datanode1.vm.hostname = "datanode1"
+    datanode1.vm.network :private_network, ip: "192.168.50.12"
+    datanode1.vm.provider "virtualbox" do |vb|
+      vb.memory = 2048
+      vb.cpus = 2
+    end
+  end
+
+  config.vm.define "datanode2" do |datanode2|
+    datanode2.vm.hostname = "datanode2"
+    datanode2.vm.network :private_network, ip: "192.168.50.13"
+    datanode2.vm.provider "virtualbox" do |vb|
+      vb.memory = 2048
+      vb.cpus = 2
+    end
+  end
+
+  config.vm.provision "shell", inline: <<-SHELL
+    # Generate SSH key if not exists
+    if [ ! -f /home/vagrant/.ssh/id_rsa ]; then
+      ssh-keygen -t rsa -N "" -f /home/vagrant/.ssh/id_rsa
+    fi
+  SHELL
+
+  # config.vm.provision "file", source: "~/.ssh/id_rsa.pub", destination: "/home/vagrant/.ssh/id_rsa.pub"
+end
